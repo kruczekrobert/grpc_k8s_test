@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: compute-deployment
+  labels:
+    app: compute
+spec:
+  selector:
+    matchLabels:
+      app: compute
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: compute
+    spec:
+      containers:
+        - name: compute
+          command: ["./grpc_k8s", "compute_service"]
+          image: grpc_k8s/grpc_k8s
+          imagePullPolicy: Never
+          ports:
+            - name: compute-service
+              containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: compute-service
+spec:
+  selector:
+    app: compute
+  ports:
+    - port: 3000
+      targetPort: compute-service
